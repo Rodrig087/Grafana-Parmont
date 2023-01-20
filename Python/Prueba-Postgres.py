@@ -10,7 +10,7 @@ import psycopg2
 
 # Conexion a las bases de datos
 conSQlite = sqlite3.connect("/home/milton/Escritorio/PlataformaIot/BaseDatos/Pruebas/home-assistant_v2.db")
-conPostgres = psycopg2.connect("dbname=milton user=milton")
+conPostgres = psycopg2.connect("host=localhost dbname=admin user=admin password=.MUNpos2022.")
 
 curSQLite = conSQlite.cursor()
 curPostgres = conPostgres.cursor()
@@ -44,11 +44,19 @@ if (banBorrar==1):
         conPostgres.commit()
 #-------------------------------------------------------------------------------------------------------------
 # Listar elementos de PostgreSQL:
-banListar = 1
+banListar = 0
 if (banListar==1):
     print(' ')
     curPostgres.execute("SELECT * FROM public.states")
-    for i in range(200):
+    for i in range(2000):
         lista_Postgres = curPostgres.fetchone()
         print(lista_Postgres)
 #-------------------------------------------------------------------------------------------------------------
+# Consultas:
+banConsulta = 1
+if (banConsulta==1):
+    print(' ')
+    curPostgres.execute("SELECT last_updated AS time, state AS metric FROM states WHERE state <> 'unavailable' AND state <> 'unknown' AND entity_id = 'sensor.humedad_estudio'")
+    for i in range(1000):
+        lista_Postgres = curPostgres.fetchone()
+        print(lista_Postgres)

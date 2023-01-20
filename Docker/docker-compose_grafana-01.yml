@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  grafana01:
+    container_name: grafana-01
+    #image: grafana/grafana:9.2.2
+    build:
+      context: .
+      dockerfile: Dockerfile_01
+    volumes:
+      - /docker/parmont/grafana/grafana-01/grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
