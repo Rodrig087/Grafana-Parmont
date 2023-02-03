@@ -1,35 +1,37 @@
-FROM grafana/grafana:9.2.2 AS grafana01
 
-# Set Grafana options
+# Selecciona la version de Grafana que deseas desplegar en el contenedor. 
+# Si se va a desplegar varias instancias se debe cambiar el nombre "grafana01" por el nombre correspondiente.
+FROM grafana/grafana:9.2.2 AS grafana01 # Editable
+
+# Habilita la comprension GZIP para acelerar la ejecucion del sitio:
 ENV GF_ENABLE_GZIP=true
-#ENV GF_USERS_DEFAULT_THEME=light
 
-# Paths
+# Paths:
 ENV GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
 ENV GF_PATHS_PLUGINS="/var/lib/grafana/plugins"
-#ENV GF_PATHS_DATA='/var/lib/grafana'
 
-###### Customization ########################################
+###### Personalizacion ########################################
+# Utiliza el usuario root:
 USER root
 
-# Replace Favicon
-COPY img/favicon.png /usr/share/grafana/public/img/fav32.png
-# Replace Logo
-COPY img/logo.svg /usr/share/grafana/public/img/grafana_icon.svg
+# Reemplaza el Favicon:
+COPY img/favicon.png /usr/share/grafana/public/img/fav32.png 
+# Reemplaza el Logo:
+COPY img/logo.svg /usr/share/grafana/public/img/grafana_icon.svg 
+# Reemplaza el Fondo:
+COPY img/background.svg /usr/share/grafana/public/img/g8_login_dark.svg 
 
-# Background
-COPY img/background.svg /usr/share/grafana/public/img/g8_login_dark.svg
+# Actualiza el Javascript
+# Reemplaza los titulos. Para editar los titulos solo reemplaza los textos que estan entre comillas al final de la linea (hasta antes del <)|g' {} \;>):
+# Titulo principal del login:
+RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|"AppTitle","Grafana")|"AppTitle","Parmont Instruments")|g' {} \; # Editable
+# Titulo del favicon:
+RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|"LoginTitle","Welcome to Grafana")|"LoginTitle","Parmont Instruments")|g' {} \; # Editable
 
-# Update Javascript
-# Replace Titles
-RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|"AppTitle","Grafana")|"AppTitle","Parmont Instruments")|g' {} \;
-RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|"LoginTitle","Welcome to Grafana")|"LoginTitle","Parmont Instruments")|g' {} \;
-# Delete Footer
+# Borra el pie de pagina:
 RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|{target:"_blank",id:"documentation",text:"Documentation",icon:"document-info",url:"https://grafana.com/docs/grafana/latest/?utm_source=grafana_footer"},{target:"_blank",id:"support",text:"Support",icon:"question-circle",url:"https://grafana.com/products/enterprise/?utm_source=grafana_footer"},{target:"_blank",id:"community",text:"Community",icon:"comments-alt",url:"https://community.grafana.com/?utm_source=grafana_footer"}||g' {} \;
 RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|{target:"_blank",id:"version",text:`${e.edition}${s}`,url:t.licenseUrl}||g' {} \;
 RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|{target:"_blank",id:"version",text:`v${e.version} (${e.commit})`,url:i?`https://grafana.com/docs/grafana/${l}/release-notes/release-notes-${o}/`:void 0}||g' {} \;
 RUN find /usr/share/grafana/public/build/ -name *.js -exec sed -i 's|{target:"_blank",id:"updateVersion",text:"New version available!",icon:"download-alt",url:"https://grafana.com/grafana/download?utm_source=grafana_footer"}||g' {} \;
 
 #############################################################
-
-#USER grafana

@@ -1,6 +1,7 @@
 version: '3.7'
 
 services:
+  # Intancia principal de Grafana:
   grafana01:
     container_name: grafana-01
     build:
@@ -11,6 +12,7 @@ services:
     ports:
       - 3000:3000
     restart: unless-stopped
+  # Instancia adicional de Grafana. Es importante especificar un puerto diferente:
   #grafana02:
   #  container_name: grafana-02
   #  build:
@@ -20,4 +22,18 @@ services:
   #    - /docker/parmont/grafana/grafana-02/grafana-data:/var/lib/grafana
   #  ports:
   #    - 3001:3000
+  #  restart: unless-stopped
+
+  # Instancia de Grafana que se ejecuta en el local host. Necesaria para consumir una base de datos remota accesible mediante tunel ssh
+  # Es importante especificar un puerto diferente:
+  #grafana03:
+  #  container_name: grafana-03
+  #  build:
+  #    context: grafana-03/
+  #    dockerfile: Dockerfile_03
+  #  volumes:
+  #    - /docker/parmont/grafana/grafana-03/grafana-data:/var/lib/grafana
+  #  environment:
+  #    GF_SERVER_HTTP_PORT: 3002
+  #  network_mode: host
   #  restart: unless-stopped
